@@ -31,10 +31,11 @@ public class EnemyManager : MonoBehaviour
 
     private void Start()
     {
+        GameManager = FindAnyObjectByType<GameManager>();
         // Iniciar en el estado de patrulla
         currentState = PatrolState;
         currentState.EnterState(this);
-
+        Debug.Log("Estado: " + currentState);
         // Obtiene el Rigidbody2D del enemigo
         rbObstaculo = GetComponent<Rigidbody2D>();
 
@@ -48,30 +49,31 @@ public class EnemyManager : MonoBehaviour
         // Asigna la velocidad inicial en esa dirección
         rbObstaculo.velocity = direction * currentSpeed;
     }
+
+   
     void Update()
     {
         currentState?.ExecuteState(this);
     }
-
-    private void ExecuteStates()
-    {
-        currentState.ExecuteState(this);
-    }
-
+  
     public void SwitchState(IStateBase newState)
     {
         currentState = newState;
         currentState.EnterState(this);
+        Debug.Log("Estado: " + currentState);
     }
 
     public void PatrolMovement()
     {
-        //  movimiento y rebote en los límites de pantalla
-    }
+        // Movimiento básico y detección de límites
+        rbObstaculo.velocity = direction * currentSpeed;
 
+        // Si choca con algo, cambiar dirección (ya manejado en OnCollisionEnter2D)
+    }
     public void ChasePlayer()
     {
-        // Implementa el movimiento hacia el jugador
+        Vector2 directionToPlayer = (player.position - transform.position).normalized;
+        rbObstaculo.velocity = directionToPlayer * currentSpeed;
     }
 
     public void EscapeFromPlayer()
@@ -93,7 +95,7 @@ public class EnemyManager : MonoBehaviour
 
     public void AttackPlayer()
     {
-        GameManager.looseLife();
+        //GameManager.looseLife();
         // Guardar la velocidad actual del Rigidbody2D
         Vector2 velocidadActual = rbObstaculo.velocity;
 
@@ -101,7 +103,7 @@ public class EnemyManager : MonoBehaviour
         {
             auSource.clip = enemyAudio;
             auSource.Play();
-            GameManager.looseLife();
+            //GameManager.looseLife();
             GameManager.TimeInvulnerable();
         }
 
@@ -116,15 +118,15 @@ public class EnemyManager : MonoBehaviour
         return Vector2.Distance(transform.position, target.position) <= attackRange;
     }
 
-    private void FixedUpdate()
-    {
-        // Incrementa la velocidad con el tiempo
-        currentSpeed += acceleration * Time.deltaTime;
+    //private void FixedUpdate()
+    //{
+    //    // Incrementa la velocidad con el tiempo
+    //    currentSpeed += acceleration * Time.deltaTime;
 
-        // Actualiza la velocidad del Rigidbody2D en la dirección actual
-        rbObstaculo.velocity = direction * currentSpeed;
-        Debug.Log(currentSpeed);
-    }
+    //    // Actualiza la velocidad del Rigidbody2D en la dirección actual
+    //    rbObstaculo.velocity = direction * currentSpeed;
+    //    Debug.Log(currentSpeed);
+    //}
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
@@ -137,84 +139,53 @@ public class EnemyManager : MonoBehaviour
     }
 
 
-    //void OnTriggerEnter2D(Collider2D collision)
-    //{
-    //    // Guardar la velocidad actual del Rigidbody2D
-    //    Vector2 velocidadActual = rbObstaculo.velocity;
+    void OnTriggerEnter2D(Collider2D collision)
+    {
+        // Guardar la velocidad actual del Rigidbody2D
+        Vector2 velocidadActual = rbObstaculo.velocity;
 
-    //    if (!GameManager.invincible && collision.gameObject.CompareTag("Personaje"))
-    //    {
-    //        auSource.clip = enemyAudio;
-    //        auSource.Play();
-    //        GameManager.looseLife();
-    //        GameManager.TimeInvulnerable();
-    //    }
+        if (!GameManager.invincible && collision.gameObject.CompareTag("Personaje"))
+        {
+            auSource.clip = enemyAudio;
+            auSource.Play();
+            GameManager.looseLife();
+            GameManager.TimeInvulnerable();
+        }
 
-    //    // Siempre restablecer la velocidad del Rigidbody2D después de todos los cálculos
-    //    rbObstaculo.velocity = velocidadActual;
-    //}
+        // Siempre restablecer la velocidad del Rigidbody2D después de todos los cálculos
+        rbObstaculo.velocity = velocidadActual;
+        velocityFix();
+    }
 
+    private void velocityFix()
+    {
+        float velocity = 3f;
+        float minVelocity = 3f;
+        float maxVelocity = 3f;  // Velocidad máxima        
 
+        // Ajuste de la velocidad en el eje X
+        if (Mathf.Abs(rbObstaculo.velocity.x) < minVelocity)
+        {
+            velocity = Random.value < 0.5f ? velocity : -velocity;
+            rbObstaculo.velocity += new Vector2(velocity, 0f);
+        }
 
-    //private void Start()
-    //{
-    //    // Obtiene el Rigidbody2D del enemigo
-    //    rbObstaculo = GetComponent<Rigidbody2D>();
+        // Ajuste de la velocidad en el eje Y
+        if (Mathf.Abs(rbObstaculo.velocity.y) < minVelocity)
+        {
+            velocity = Random.value < 0.5f ? velocity : -velocity;
+            rbObstaculo.velocity += new Vector2(velocity, 0f);
+        }
 
-    //    // Establece la velocidad inicial
-    //    currentSpeed = initialSpeed;
-
-    //    // Inicia con una dirección aleatoria
-    //    float angle = Random.Range(0f, 360f);
-    //    direction = new Vector2(Mathf.Cos(angle), Mathf.Sin(angle)).normalized;
-
-    //    // Asigna la velocidad inicial en esa dirección
-    //    rbObstaculo.velocity = direction * currentSpeed;
-    //}
+        // Limitar la velocidad máxima
+        rbObstaculo.velocity = Vector2.ClampMagnitude(rbObstaculo.velocity, maxVelocity);
+    }
 
 
 
 }
-//private void Start()
-//{
-//    rbObstaculo.velocity = Vector2.zero;
-//    velocidad.x = Random.Range(-1f, 1f);
-//    velocidad.y = -1;
-//    rbObstaculo.AddForce(transform.right * rapidez * velocidad * Time.deltaTime);
-//    GameManager = FindAnyObjectByType<GameManager>();
-
-//    //transform.position += transform.right * rapidez * Time.deltaTime;
-
-//}
 
 
-
-
-
-//Funcion para arreglar la velocidad del rebote del obstáculo.
-//private void velocityFix()
-//{
-//    float velocity = 3f;
-//    float minVelocity = 3f;
-//    float maxVelocity = 3f;  // Velocidad máxima        
-
-//    // Ajuste de la velocidad en el eje X
-//    if (Mathf.Abs(rbObstaculo.velocity.x) < minVelocity)
-//    {
-//        velocity = Random.value < 0.5f ? velocity : -velocity;
-//        rbObstaculo.velocity += new Vector2(velocity, 0f);
-//    }
-
-//    // Ajuste de la velocidad en el eje Y
-//    if (Mathf.Abs(rbObstaculo.velocity.y) < minVelocity)
-//    {
-//        velocity = Random.value < 0.5f ? velocity : -velocity;
-//        rbObstaculo.velocity += new Vector2(velocity, 0f);
-//    }
-
-//    // Limitar la velocidad máxima
-//    rbObstaculo.velocity = Vector2.ClampMagnitude(rbObstaculo.velocity, maxVelocity);
-//}
 
 
 

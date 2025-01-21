@@ -1734,7 +1734,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 990227573}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b4c88d7b48c3877469e2d445391a31d6, type: 3}
   m_Name: 
@@ -1747,7 +1747,7 @@ MonoBehaviour:
   initialSpeed: 5
   acceleration: 0.5
   player: {fileID: 886122917}
-  target: {fileID: 0}
+  target: {fileID: 886122917}
   attackRange: 1.5
 --- !u!1 &1072041965
 GameObject:
@@ -2284,7 +2284,7 @@ PrefabInstance:
       objectReference: {fileID: 6200000, guid: b2f167e2498649843830f371a484065c, type: 2}
     - target: {fileID: 1403645321192528221, guid: 21d5839e3f9594e418b87f2ee467107e, type: 3}
       propertyPath: m_AngularDrag
-      value: 0
+      value: 0.05
       objectReference: {fileID: 0}
     - target: {fileID: 1403645321192528221, guid: 21d5839e3f9594e418b87f2ee467107e, type: 3}
       propertyPath: m_Constraints
@@ -2294,6 +2294,14 @@ PrefabInstance:
       propertyPath: m_GravityScale
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2366013039417425338, guid: 21d5839e3f9594e418b87f2ee467107e, type: 3}
+      propertyPath: player
+      value: 
+      objectReference: {fileID: 886122917}
+    - target: {fileID: 2366013039417425338, guid: 21d5839e3f9594e418b87f2ee467107e, type: 3}
+      propertyPath: target
+      value: 
+      objectReference: {fileID: 886122917}
     - target: {fileID: 2366013039417425338, guid: 21d5839e3f9594e418b87f2ee467107e, type: 3}
       propertyPath: rapidez
       value: 300
