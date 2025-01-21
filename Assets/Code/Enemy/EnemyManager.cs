@@ -48,6 +48,8 @@ public class EnemyManager : MonoBehaviour
 
         // Asigna la velocidad inicial en esa dirección
         rbObstaculo.velocity = direction * currentSpeed;
+
+
     }
 
    
@@ -103,13 +105,13 @@ public class EnemyManager : MonoBehaviour
         {
             auSource.clip = enemyAudio;
             auSource.Play();
-            //GameManager.looseLife();
+            GameManager.looseLife();
             GameManager.TimeInvulnerable();
         }
 
         // Siempre restablecer la velocidad del Rigidbody2D después de todos los cálculos
         rbObstaculo.velocity = velocidadActual;
-
+        velocityFix();
     }
 
     public bool IsTargetInAttackRange()
@@ -117,17 +119,7 @@ public class EnemyManager : MonoBehaviour
         if (target == null) return false;
         return Vector2.Distance(transform.position, target.position) <= attackRange;
     }
-
-    //private void FixedUpdate()
-    //{
-    //    // Incrementa la velocidad con el tiempo
-    //    currentSpeed += acceleration * Time.deltaTime;
-
-    //    // Actualiza la velocidad del Rigidbody2D en la dirección actual
-    //    rbObstaculo.velocity = direction * currentSpeed;
-    //    Debug.Log(currentSpeed);
-    //}
-
+  
     private void OnCollisionEnter2D(Collision2D collision)
     {
         // Al chocar, calcula la nueva dirección reflejada
@@ -139,23 +131,23 @@ public class EnemyManager : MonoBehaviour
     }
 
 
-    void OnTriggerEnter2D(Collider2D collision)
-    {
-        // Guardar la velocidad actual del Rigidbody2D
-        Vector2 velocidadActual = rbObstaculo.velocity;
+    //void OnTriggerEnter2D(Collider2D collision)
+    //{
+    //    // Guardar la velocidad actual del Rigidbody2D
+    //    Vector2 velocidadActual = rbObstaculo.velocity;
 
-        if (!GameManager.invincible && collision.gameObject.CompareTag("Personaje"))
-        {
-            auSource.clip = enemyAudio;
-            auSource.Play();
-            GameManager.looseLife();
-            GameManager.TimeInvulnerable();
-        }
+    //    if (!GameManager.invincible && collision.gameObject.CompareTag("Personaje"))
+    //    {
+    //        auSource.clip = enemyAudio;
+    //        auSource.Play();
+    //        GameManager.looseLife();
+    //        GameManager.TimeInvulnerable();
+    //    }
 
-        // Siempre restablecer la velocidad del Rigidbody2D después de todos los cálculos
-        rbObstaculo.velocity = velocidadActual;
-        velocityFix();
-    }
+    //    // Siempre restablecer la velocidad del Rigidbody2D después de todos los cálculos
+    //    rbObstaculo.velocity = velocidadActual;
+    //    velocityFix();
+    //}
 
     private void velocityFix()
     {
